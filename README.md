@@ -1,18 +1,17 @@
-This is a mirror of http://www.vim.org/scripts/script.php?script_id=3510
+# About
 
-VimRepress is a plugin for managing wordpress blog from Vim,  a rewritten  of vimscript #1953 , which is broken for years. 
+This is a fork of the VimRepress project, located at http://www.vim.org/scripts/script.php?script_id=3510.
 
-Now VimRepress lives with more powerful again. 
+VimBlog is a plugin for managing a Wordpress blog using Vim. There are many similar plugins, but most are no longer being developed.
 
-*REQUIREMENT* 
+## Requirements
 
 - Vim 7.3+ with python 2.6/2.7 support 
 - Python Environment matched wtih Vim's support 
 - python-markdown/python-markdown2 installed 
-- wordpress 3.0.0 +
+- Wordpress 3.0.0 +
 
-
-COMMAND EXAMPLES 
+## Command Examples
 
 Some commands list above contain special usage, example below may clearify them for you. 
 
@@ -35,6 +34,6 @@ Some commands list above contain special usage, example below may clearify them 
     :BlogOpen http://your-second-blog.com/?p=679 
     :BlogOpen http://your-third-blog.com/with-your-custom-permalink 
 
-More detailed about this commands, type :help vimpress while you have vimrepress installed. 
+### Credits
 
-Developing Repository:  https://bitbucket.org/pentie/vimrepress
+All credit to Pentie for creating VimRepress, which this is based on.

@@ -444,7 +444,7 @@ class ContentStruct(object):
 
     def fill_buffer(self):
         meta = dict(strid="", title="", slug="",
-                cats="", tags="", editformat="Markdown", edittype="")
+                cats="", tags="", editformat="HTML", edittype="")
         meta.update(self.buffer_meta)
         meta_text = self.META_TEMPLATE.format(**meta)\
                 .encode('utf-8').splitlines()
@@ -535,7 +535,7 @@ class ContentStruct(object):
          #Use Markdown text if exists in custom fields
         for field in struct["custom_fields"]:
             if field["key"] == G.CUSTOM_FIELD_KEY:
-                meta['editformat'] = "Markdown"
+                meta['editformat'] = "HTML"
                 self.raw_text = content = field["value"]
                 break
         else:
