@@ -34,6 +34,18 @@ Some commands list above contain special usage, example below may clearify them 
     :BlogOpen http://your-second-blog.com/?p=679 
     :BlogOpen http://your-third-blog.com/with-your-custom-permalink 
 
+## Modifications
+
+I have made a number of changes (hence the name change) to make it more functional for me, including the following:
+
+- I removed the prompt for editing or deleting posts, and am using a command to skip those steps during blogging workflow (see below)
+- I moved the post type from Markdown to HTML because I have Wordpress doing Markdown conversion on the server side
+
+## Commands
+
+I set up a few shortcuts that I use during day-to-day blogging:
+
+-  <code>nnoremap <leader>b :BlogSave publish<CR></code>
 ### Credits
 
 All credit to Pentie for creating VimRepress, which this is based on.

@@ -881,7 +881,6 @@ def blog_list(edit_type = "post", keep_type = False):
             % G.LIST_VIEW_KEY_MAP % edit_type)
     vim.command("map <silent> <buffer> %(delete)s :py blog_list_on_key_press('delete', '%%s')<cr>"
             % G.LIST_VIEW_KEY_MAP % edit_type)
-    echomsg("Press <Enter> to edit. <Delete> to move to trash.")
 
 
 @exception_check
