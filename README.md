@@ -11,10 +11,18 @@ VimBlog is a plugin for managing a Wordpress blog using Vim. There are many simi
 - python-markdown/python-markdown2 installed 
 - Wordpress 3.0.0 +
 
+## Installation
+
+1. Clone ths repository into your Vim environment's plugin directory
+2. Create a ~/.vimrepressrc file, and put the following in it
+
+blog_url = http://yoursite.com/ 
+username = you 
+password = goodpassword 
+
 ## Command Examples
 
 Some commands list above contain special usage, example below may clearify them for you. 
-
 
     :BlogList             -  List 30 recent posts. 
     :BlogList page        -  List 30 recent pages. 
