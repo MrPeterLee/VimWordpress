@@ -46,6 +46,7 @@ I have made a number of changes (hence the name change) to make it more function
 I set up a few shortcuts that I use during day-to-day blogging:
 
 -  <code>nnoremap <leader>b :BlogSave publish<CR></code>
+-  <code>nnoremap <leader>h :set ft=HTML<CR><CR></code>
 
 ### Credits
 
