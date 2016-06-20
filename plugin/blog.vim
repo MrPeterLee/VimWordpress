@@ -53,7 +53,7 @@
 "
 "#######################################################################
 
-if !has("python")
+if !has("python3")
     finish
 endif
 
@@ -69,26 +69,26 @@ function! CompEditType(ArgLead, CmdLine, CursorPos)
   return "post\npage\n"
 endfunction
 
-command! -nargs=? -complete=custom,CompEditType BlogList exec('py blog_list(<f-args>)')
-command! -nargs=? -complete=custom,CompEditType BlogNew exec('py blog_new(<f-args>)')
-command! -nargs=? -complete=custom,CompSave BlogSave exec('py blog_save(<f-args>)')
-command! -nargs=? -complete=custom,CompPrev BlogPreview exec('py blog_preview(<f-args>)')
-command! -nargs=1 -complete=file BlogUpload exec('py blog_upload_media(<f-args>)')
-command! -nargs=1 BlogOpen exec('py blog_guess_open(<f-args>)')
-command! -nargs=? BlogSwitch exec('py blog_config_switch(<f-args>)')
-command! -nargs=? BlogCode exec('py blog_append_code(<f-args>)')
+command! -nargs=? -complete=custom,CompEditType BlogList exec('py3 blog_list(<f-args>)')
+command! -nargs=? -complete=custom,CompEditType BlogNew exec('py3 blog_new(<f-args>)')
+command! -nargs=? -complete=custom,CompSave BlogSave exec('py3 blog_save(<f-args>)')
+command! -nargs=? -complete=custom,CompPrev BlogPreview exec('py3 blog_preview(<f-args>)')
+command! -nargs=1 -complete=file BlogUpload exec('py3 blog_upload_media(<f-args>)')
+command! -nargs=1 BlogOpen exec('py3 blog_guess_open(<f-args>)')
+command! -nargs=? BlogSwitch exec('py3 blog_config_switch(<f-args>)')
+command! -nargs=? BlogCode exec('py3 blog_append_code(<f-args>)')
 
-python << EOF
+python3 << EOF
 # -*- coding: utf-8 -*-
 import vim
-import urllib
-import xmlrpclib
+import urllib.request, urllib.parse, urllib.error
+import xmlrpc.client
 import re
 import os
 import mimetypes
 import webbrowser
 import tempfile
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 try:
     import markdown
@@ -109,16 +109,16 @@ def exception_check(func):
     def __check(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (VimPressException, AssertionError), e:
+        except (VimPressException, AssertionError) as e:
             echoerr(str(e))
-        except (xmlrpclib.Fault, xmlrpclib.ProtocolError), e:
+        except (xmlrpc.client.Fault, xmlrpc.client.ProtocolError) as e:
             if getattr(e, "faultString", None) is None:
                 echoerr("xmlrpc error: %s" % e)
             else:
                 echoerr("xmlrpc error: %s" % e.faultString.encode("utf-8"))
-        except IOError, e:
+        except IOError as e:
             echoerr("network error: %s" % e)
-        except Exception, e:
+        except Exception as e:
             echoerr("something wrong: %s" % e)
             raise
 
@@ -225,7 +225,7 @@ class DataObject(object):
                     blog_username = config['username']
                     blog_password = config.get('password', '')
                     blog_url = config['blog_url']
-                except KeyError, e:
+                except KeyError as e:
                     raise VimPressException("Configuration error: %s" % e)
                 echomsg("Connecting to '%s' ... " % blog_url)
                 if blog_password == '':
@@ -260,7 +260,7 @@ class DataObject(object):
                 confpsr.read(confile)
                 for sec in confpsr.sections():
                     values = [confpsr.get(sec, i) for i in conf_options]
-                    conf_list.append(dict(zip(conf_options, values)))
+                    conf_list.append(dict(list(zip(conf_options, values))))
 
                 if len(conf_list) > 0:
                     self.__config = conf_list
@@ -312,7 +312,7 @@ class wp_xmlrpc(object):
         self.blog_url = blog_url
         self.username = username
         self.password = password
-        p = xmlrpclib.ServerProxy(os.path.join(blog_url, "xmlrpc.php"))
+        p = xmlrpc.client.ServerProxy(os.path.join(blog_url, "xmlrpc.php"))
         self.mw_api = p.metaWeblog
         self.wp_api = p.wp
         self.mt_api = p.mt
@@ -398,7 +398,7 @@ class ContentStruct(object):
         pm = "\n".join(pt)
         bm = "\n".join(['"{k:<11}: {{{t}}}'.format(k=p, t=p.lower())
             for p in KEYS_BLOG])
-        return u'"{bg}\n{0}\n"{mid}\n{1}\n"{ed}\n'.format(pm, bm, **G.MARKER)
+        return '"{bg}\n{0}\n"{mid}\n{1}\n"{ed}\n'.format(pm, bm, **G.MARKER)
 
     POST_BEGIN = property(lambda self: len(self.META_TEMPLATE.splitlines()))
     raw_text = ''
@@ -470,7 +470,7 @@ class ContentStruct(object):
                 line = vim.current.buffer[end][1:].strip().split(":")
                 k, v = line[0].strip().lower(), ':'.join(line[1:])
                 if k in kw:
-                    new_line = u"\"%s: %s" % (line[0], kw[k])
+                    new_line = "\"%s: %s" % (line[0], kw[k])
                     vim.current.buffer[end] = new_line.encode('utf-8')
             end += 1
 
@@ -528,7 +528,7 @@ class ContentStruct(object):
          #detect more text
         post_more = struct.get(MORE_KEY, '')
         if len(post_more) > 0:
-            content += u'<!--more-->' + post_more
+            content += '<!--more-->' + post_more
             struct[MORE_KEY] = ''
             self.html_text = struct["description"] = content
 
@@ -584,7 +584,7 @@ class ContentStruct(object):
             g_data.vimpress_temp_dir = tempfile.mkdtemp(suffix="vimpress")
 
         html = \
-                u"""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <title>Vimpress Local Preview: %(title)s</title> <style type="text/css"> ul, li { margin: 1em; } :link,:visited { text-decoration:none } h1,h2,h3,h4,h5,h6,pre,code { font-size:1.1em; } h1 {font-size: 1.8em;} h2 {font-size: 1.5em;} h3{font-size: 1.3em;} h4{font-size: 1.2em;} h5 {font-size: 1.1em;} a img,:link img,:visited img { border:none } body { margin:0 auto; width:770px; font-family: Helvetica, Arial, Sans-serif; font-size:12px; color:#444; } </style> </meta> </head> <body> %(content)s </body> </html>
+                """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <title>Vimpress Local Preview: %(title)s</title> <style type="text/css"> ul, li { margin: 1em; } :link,:visited { text-decoration:none } h1,h2,h3,h4,h5,h6,pre,code { font-size:1.1em; } h1 {font-size: 1.8em;} h2 {font-size: 1.5em;} h3{font-size: 1.3em;} h4{font-size: 1.2em;} h5 {font-size: 1.1em;} a img,:link img,:visited img { border:none } body { margin:0 auto; width:770px; font-family: Helvetica, Arial, Sans-serif; font-size:12px; color:#444; } </style> </meta> </head> <body> %(content)s </body> </html>
 """ % dict(content=self.html_text, title=self.buffer_meta["title"])
         with open(os.path.join(
                 g_data.vimpress_temp_dir, "vimpress_temp.html"), 'w') as f:
@@ -646,12 +646,12 @@ def view_switch(view = "", assert_view = "", reset = False):
                 if g_data.view != assert_view:
                     raise VimPressException("Command only available at '%s' view." % assert_view)
 
-            if func.func_name == "blog_new":
+            if func.__name__ == "blog_new":
                 if g_data.view == "list":
                     kw["currentContent"] = ['']
                 else:
                     kw["currentContent"] = vim.current.buffer[:]
-            elif func.func_name == "blog_config_switch":
+            elif func.__name__ == "blog_config_switch":
                 if g_data.view == "list":
                     kw["refresh_list"] = True
 
@@ -664,7 +664,7 @@ def view_switch(view = "", assert_view = "", reset = False):
 
                     #from list view
                     if g_data.view == "list":
-                        for v in g_data.LIST_VIEW_KEY_MAP.values():
+                        for v in list(g_data.LIST_VIEW_KEY_MAP.values()):
                             if vim.eval("mapcheck('%s')" % v):
                                 vim.command('unmap <buffer> %s' % v)
 
@@ -767,7 +767,7 @@ def blog_edit(edit_type, post_id):
     vim.current.window.cursor = (cp.POST_BEGIN, 0)
     vim.command('setl nomodified')
     vim.command('setl textwidth=0')
-    for v in G.LIST_VIEW_KEY_MAP.values():
+    for v in list(G.LIST_VIEW_KEY_MAP.values()):
         if vim.eval("mapcheck('%s')" % v):
             vim.command('unmap <buffer> %s' % v)
 
@@ -841,12 +841,12 @@ def append_blog_list(edit_type, count = G.DEFAULT_LIST_COUNT):
         posts_titles = g_data.xmlrpc.get_recent_post_titles(retrive_count)
 
         vim.current.buffer.append(
-                [(u"%(postid)s\t%(title)s" % p).encode('utf-8')
+                [("%(postid)s\t%(title)s" % p).encode('utf-8')
                     for p in posts_titles[current_posts:]])
     else:
         pages = g_data.xmlrpc.get_page_list()
         vim.current.buffer.append(
-            [(u"%(page_id)s\t%(page_title)s" % p).encode('utf-8') for p in pages])
+            [("%(page_id)s\t%(page_title)s" % p).encode('utf-8') for p in pages])
 
 
 @exception_check
@@ -897,7 +897,7 @@ def blog_upload_media(file_path):
     name = os.path.basename(file_path)
     filetype = mimetypes.guess_type(file_path)[0]
     with open(file_path) as f:
-        bits = xmlrpclib.Binary(f.read())
+        bits = xmlrpc.client.Binary(f.read())
 
     result = g_data.xmlrpc.new_media_object(dict(name = name, type = filetype, bits = bits))
 
@@ -975,7 +975,7 @@ def blog_guess_open(what):
 
                 # fail,  try get full link from headers
                 if guess_id is None:
-                    headers = urllib.urlopen(what).headers.headers
+                    headers = urllib.request.urlopen(what).headers.headers
                     for link in headers:
                         if link.startswith("Link:"):
                             post_id = re.search(r"<\S+?p=(\d+)>", link).group(1)
