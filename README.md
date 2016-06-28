@@ -57,8 +57,8 @@ A few shortcuts was recommended in VimBlog for day-to-day blogging:
 From the shell I launch these two character shortcuts to begin blogging immediately.
 
 ```
-alias nb="vim +BlogNew
-alias eb="vim +BlogList
+alias nb="vim +BlogNew"
+alias eb="vim +BlogList"
 ```
 
 ### Inside Vim
