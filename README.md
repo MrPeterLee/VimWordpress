@@ -19,12 +19,12 @@ VimWordpress is a Python 3 plugin for Vim to manage Wordpress (incl. wordpress.c
     Plugin 'mrpeterlee/VimWordpress'
 2. Create a ~/.vimpressrc file, and put the following in it
 
-<code>
+```
     [Blog0]
     blog_url = https://yoursite.com/ 
     username = your_user_name
     password = your_password
-</code>
+```
 
 ## Command Examples
 
