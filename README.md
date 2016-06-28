@@ -20,10 +20,10 @@ VimWordpress is a Python 3 plugin for Vim to manage Wordpress (incl. wordpress.c
 2. Create a ~/.vimpressrc file, and put the following in it
 
 ```
-    [Blog0]
-    blog_url = https://yoursite.com/ 
-    username = your_user_name
-    password = your_password
+[Blog0]
+blog_url = https://yoursite.com/ 
+username = your_user_name
+password = your_password
 ```
 
 ## Command Examples
@@ -56,15 +56,19 @@ A few shortcuts was recommended in VimBlog for day-to-day blogging:
 
 From the shell I launch these two character shortcuts to begin blogging immediately.
 
--  <code>alias nb="vim +BlogNew</code>
--  <code>alias eb="vim +BlogList</code>
+```
+alias nb="vim +BlogNew
+alias eb="vim +BlogList
+```
 
 ### Inside Vim
 
 Once inside Vim I can run these.
 
--  <code>nnoremap <leader>b :BlogSave publish<CR></code>
--  <code>nnoremap <leader>h :set ft=HTML<CR><CR></code>
+```
+nnoremap <leader>b :BlogSave publish<CR>
+nnoremap <leader>h :set ft=HTML<CR><CR>
+```
 
 ### Credits
 
