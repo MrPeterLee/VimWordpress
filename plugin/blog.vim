@@ -13,16 +13,16 @@
 "
 " You should have received a copy of the GNU General Public License
 " along with this program; if not, write to the Free Software Foundation,
-" Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
-" 
+" Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+"
 " Contributors:	Adrien Friggeri <adrien@friggeri.net>
 "               Pigeond <http://pigeond.net/blog/>
 "               Justin Sattery <justin.slattery@fzysqr.com>
 "               Lenin Lee <lenin.lee@gmail.com>
 "               Conner McDaniel <connermcd@gmail.com>
 "
-" Forked By: Preston M.[BOYPT] <pentie@gmail.com>
-" Repository: https://bitbucket.org/pentie/vimrepress
+" Forked By: Peter Lee <mr.peter.lee@hotmail.com>
+" Repository: https://github.com/MrPeterLee/VimWordpress
 "
 " URL:		http://www.friggeri.net/projets/vimblog/
 "           http://pigeond.net/blog/2009/05/07/vimpress-again/
@@ -30,13 +30,14 @@
 "           http://fzysqr.com/
 "           http://apt-blog.net
 "
-" VimRepress 
-"    - A mod of a mod of a mod of Vimpress.   
+" VimWordpress
+"    - Supports only Vim + Python3; For Python 2, please use VimBlog.
+"    - A mod of mod of a mod of a mod of Vimpress.
 "    - A vim plugin fot writting your wordpress blog.
 "    - Write with Markdown, control posts format precisely.
 "    - Stores Markdown rawtext in wordpress custom fields.
 "
-" Version:	3.2.0
+" Version:	 4.0 beta
 "
 " Config: Create account configure as `~/.vimpressrc' in the following
 " format:
@@ -51,12 +52,18 @@
 "username = someone
 "password =
 "
+" Hotkeys: Suggested hotkeys to be specified in .vimrc
+" map <silent> <Leader>bl :BlogList<CR>
+" map <silent> <Leader>bn :BlogNew<CR>
+" map <silent> <Leader>bs :BlogSave<CR>
+" map <silent> <Leader>bp :BlogPreview<CR>
+" map <silent> <Leader>bl :BlogUpload<CR>
+" map <silent> <Leader>bo :BlogOpen<CR>
+" map <silent> <Leader>bs :BlogSwitch<CR>
+" map <silent> <Leader>bc :BlogCode<CR>
+
 "#######################################################################
-
-if !has("python3")
-    finish
-endif
-
+"
 function! CompSave(ArgLead, CmdLine, CursorPos)
   return "publish\ndraft\n"
 endfunction
@@ -69,14 +76,14 @@ function! CompEditType(ArgLead, CmdLine, CursorPos)
   return "post\npage\n"
 endfunction
 
-command! -nargs=? -complete=custom,CompEditType BlogList exec('py3 blog_list(<f-args>)')
-command! -nargs=? -complete=custom,CompEditType BlogNew exec('py3 blog_new(<f-args>)')
-command! -nargs=? -complete=custom,CompSave BlogSave exec('py3 blog_save(<f-args>)')
-command! -nargs=? -complete=custom,CompPrev BlogPreview exec('py3 blog_preview(<f-args>)')
-command! -nargs=1 -complete=file BlogUpload exec('py3 blog_upload_media(<f-args>)')
-command! -nargs=1 BlogOpen exec('py3 blog_guess_open(<f-args>)')
-command! -nargs=? BlogSwitch exec('py3 blog_config_switch(<f-args>)')
-command! -nargs=? BlogCode exec('py3 blog_append_code(<f-args>)')
+command! -nargs=? -complete=custom,CompEditType BlogList exec('python3 blog_list(<f-args>)')
+command! -nargs=? -complete=custom,CompEditType BlogNew exec('python3 blog_new(<f-args>)')
+command! -nargs=? -complete=custom,CompSave BlogSave exec('python3 blog_save(<f-args>)')
+command! -nargs=? -complete=custom,CompPrev BlogPreview exec('python3 blog_preview(<f-args>)')
+command! -nargs=1 -complete=file BlogUpload exec('python3 blog_upload_media(<f-args>)')
+command! -nargs=1 BlogOpen exec('python3 blog_guess_open(<f-args>)')
+command! -nargs=? BlogSwitch exec('python3 blog_config_switch(<f-args>)')
+command! -nargs=? BlogCode exec('python3 blog_append_code(<f-args>)')
 
 python3 << EOF
 # -*- coding: utf-8 -*-
@@ -115,7 +122,8 @@ def exception_check(func):
             if getattr(e, "faultString", None) is None:
                 echoerr("xmlrpc error: %s" % e)
             else:
-                echoerr("xmlrpc error: %s" % e.faultString.encode("utf-8"))
+                echoerr("xmlrpc error: %s" % e.faultString)
+
         except IOError as e:
             echoerr("network error: %s" % e)
         except Exception as e:
@@ -139,7 +147,7 @@ class VimPressException(Exception):
 class DataObject(object):
 
     #CONST
-    DEFAULT_LIST_COUNT = "15"
+    DEFAULT_LIST_COUNT = "30"
     IMAGE_TEMPLATE = '<a href="%(url)s">' \
                      '<img title="%(file)s" alt="%(file)s" src="%(url)s"' \
                      'class="aligncenter" /></a>'
@@ -227,7 +235,7 @@ class DataObject(object):
                     blog_url = config['blog_url']
                 except KeyError as e:
                     raise VimPressException("Configuration error: %s" % e)
-                echomsg("Connecting to '%s' ... " % blog_url)
+                echomsg("Connected to '%s' ... " % blog_url)
                 if blog_password == '':
                     blog_password = vim_input(
                             "Enter password for %s" % blog_url, True)
@@ -239,12 +247,12 @@ class DataObject(object):
             # Setting tags and categories for completefunc
             categories = config.get("categories", None)
             if categories is None:
-                categories = [i["description"].encode("utf-8")
-                        for i in self.xmlrpc.get_categories()]
+                categories = [i["description"] for i in self.xmlrpc.get_categories()]
                 config["categories"] = categories
 
             vim.command('let s:completable = "%s"' % '|'.join(categories))
-            echomsg("done.")
+
+            # echomsg("done.")  ## Disabled as it pops up "press enter"
         return self.__xmlrpc
 
     @property
@@ -433,25 +441,26 @@ class ContentStruct(object):
             if not vim.current.buffer[end].startswith('"===='):
                 line = vim.current.buffer[end][1:].strip().split(":")
                 k, v = line[0].strip().lower(), ':'.join(line[1:])
-                self.buffer_meta[k.strip().lower()] = v.strip().decode('utf-8')
+                self.buffer_meta[k.strip().lower()] = v.strip()
             end += 1
 
         if self.EDIT_TYPE != self.buffer_meta["edittype"]:
             self.EDIT_TYPE = self.buffer_meta["edittype"]
 
-        self.buffer_meta["content"] = '\n'.join(
-                vim.current.buffer[end + 1:]).decode('utf-8')
+        self.buffer_meta["content"] = '\n'.join(vim.current.buffer[end + 1:])
 
     def fill_buffer(self):
         meta = dict(strid="", title="", slug="",
                 cats="", tags="", editformat="HTML", edittype="")
         meta.update(self.buffer_meta)
-        meta_text = self.META_TEMPLATE.format(**meta)\
-                .encode('utf-8').splitlines()
+
+        meta_text = self.META_TEMPLATE.format(**meta).splitlines()
+
         vim.current.buffer[0] = meta_text[0]
         vim.current.buffer.append(meta_text[1:])
-        content = self.buffer_meta.get("content", ' ')\
-                .encode('utf-8').splitlines()
+
+        content = self.buffer_meta.get("content", ' ').splitlines()
+
         vim.current.buffer.append(content)
 
     def update_buffer_meta(self):
@@ -471,7 +480,7 @@ class ContentStruct(object):
                 k, v = line[0].strip().lower(), ':'.join(line[1:])
                 if k in kw:
                     new_line = "\"%s: %s" % (line[0], kw[k])
-                    vim.current.buffer[end] = new_line.encode('utf-8')
+                    vim.current.buffer[end] = new_line
             end += 1
 
     def refresh_from_buffer(self):
@@ -588,7 +597,8 @@ class ContentStruct(object):
 """ % dict(content=self.html_text, title=self.buffer_meta["title"])
         with open(os.path.join(
                 g_data.vimpress_temp_dir, "vimpress_temp.html"), 'w') as f:
-            f.write(html.encode('utf-8'))
+            f.write(html)
+
         webbrowser.open("file://%s" % f.name)
 
     def remote_preview(self, pub="draft"):
@@ -623,7 +633,8 @@ def vim_encoding_check(func):
                     "correctly.")
         elif orig_enc != "utf-8":
             modified = vim.eval("&modified")
-            buf_list = '\n'.join(vim.current.buffer).decode(orig_enc).encode('utf-8').splitlines()
+            buf_list = '\n'.join(vim.current.buffer).decode(orig_enc).splitlines()
+
             del vim.current.buffer[:]
             vim.command("setl encoding=utf-8")
             vim.current.buffer[0] = buf_list[0]
@@ -855,7 +866,7 @@ def append_blog_list(edit_type, count = G.DEFAULT_LIST_COUNT):
 def blog_list(edit_type = "post", keep_type = False):
     """
     Creates a listing buffer of specified type.
-    @params edit_type - either "post(s)" or "page(s)"
+    @params edit_type : either "post(s)" or "page(s)"
     """
     if keep_type:
         first_line = vim.current.buffer[0]
@@ -877,9 +888,9 @@ def blog_list(edit_type = "post", keep_type = False):
     vim.command("setl nomodified")
     vim.command("setl nomodifiable")
     vim.current.window.cursor = (2, 0)
-    vim.command("map <silent> <buffer> %(enter)s :py blog_list_on_key_press('open', '%%s')<cr>"
+    vim.command("map <silent> <buffer> %(enter)s :python3 blog_list_on_key_press('open', '%%s')<cr>"
             % G.LIST_VIEW_KEY_MAP % edit_type)
-    vim.command("map <silent> <buffer> %(delete)s :py blog_list_on_key_press('delete', '%%s')<cr>"
+    vim.command("map <silent> <buffer> %(delete)s :python3 blog_list_on_key_press('delete', '%%s')<cr>"
             % G.LIST_VIEW_KEY_MAP % edit_type)
 
 

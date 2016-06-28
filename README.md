@@ -1,26 +1,28 @@
 # About
 
-This is a fork of the VimRepress project, located at http://www.vim.org/scripts/script.php?script_id=3510.
+This is a fork of the VimBlog project, located at: https://github.com/danielmiessler/VimBlog
 
-VimBlog is a plugin for managing a Wordpress blog using Vim. There are many similar plugins, but most are no longer being developed.
+And VimBlog was a fork of the VimRepress project, located at: https://github.com/vim-scripts/VimRepress
+
+VimWordpress is a Python 3 plugin for Vim to manage Wordpress (incl. wordpress.com) blogs. As of 2016, other vim plugins lack the support of Python 3, which motivates the development of the VimWordpress plugin.
 
 ## Requirements
 
-- Vim 7.3+ with python 2.6/2.7 support 
-- Python Environment matched wtih Vim's support 
-- python-markdown/python-markdown2 installed 
+- Vim 7.3+ with Python 3 support (Python 2 support is dropped) 
+- Python 3 Environment matched wtih Vim's support ("has(python3)" return 1 in vim)
+- python-markdown/python-markdown2 installed (execute "pip install markdown2" in shell)
 - Wordpress 3.0.0 +
 
 ## Installation
 
-1. Clone ths repository into your Vim environment's plugin directory
-2. Create a ~/.vimrepressrc file, and put the following in it
+1. Use Vundle to add mrpeterlee/VimWordpress to the Plugin source.
+    Plugin 'mrpeterlee/VimWordpress'
+2. Create a ~/.vimpressrc file, and put the following in it
 
-blog_url = http://yoursite.com/ 
-
-username = you 
-
-password = goodpassword 
+    [Blog0]
+    blog_url = https://yoursite.com/ 
+    username = your_user_name
+    password = your_password
 
 ## Command Examples
 
@@ -44,16 +46,9 @@ Some commands list above contain special usage, example below may clearify them 
     :BlogOpen http://your-second-blog.com/?p=679 
     :BlogOpen http://your-third-blog.com/with-your-custom-permalink 
 
-## Modifications
-
-I have made a number of changes (hence the name change) to make it more functional for me, including the following:
-
-- I removed the prompt for editing or deleting posts, and am using a command to skip those steps during blogging workflow (see below)
-- I moved the post type from Markdown to HTML because I have Wordpress doing Markdown conversion on the server side
-
 ## Commands
 
-I set up a few shortcuts that I use during day-to-day blogging:
+A few shortcuts was recommended in VimBlog for day-to-day blogging:
 
 ### Starting workflow
 
