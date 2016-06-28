@@ -70,6 +70,10 @@ nnoremap <leader>b :BlogSave publish<CR>
 nnoremap <leader>h :set ft=HTML<CR><CR>
 ```
 
+### Default to publish as "private"
+
+Wordpress defines three types of posting: "draft", "private", "public", and VimWordpress defaults to "private" after ":BlogSave".
+
 ### Credits
 
 All credit to Pentie for creating VimRepress, which this is based on.

@@ -423,7 +423,7 @@ class ContentStruct(object):
                 post_type=edit_type,
                 description='',
                 custom_fields=[],
-                post_status='draft')
+                post_status='private')
 
         if post_id is not None:
             self.refresh_from_wp(post_id)
@@ -697,7 +697,12 @@ def blog_wise_open_view():
         del vim.current.buffer[:]
         vim.command('setl nomodified')
     else:
-        vim.command(":new")
+        # Disable open new Vim pane
+        # vim.command(":new")
+        vim.command('setl modifiable')
+        del vim.current.buffer[:]
+        vim.command('setl nomodified')
+
     vim.command('setl syntax=blogsyntax')
     vim.command('setl completefunc=Completable')
 
@@ -990,7 +995,6 @@ def blog_guess_open(what):
                     for link in headers:
                         if link.startswith("Link:"):
                             post_id = re.search(r"<\S+?p=(\d+)>", link).group(1)
-
                 else:
                     post_id = guess_id.group(1)
 
@@ -1001,7 +1005,7 @@ def blog_guess_open(what):
             # detected something ?
             assert post_id != '', "Failed to get post/page id from '%s'." % what
 
-             #switch view if needed.
+            #switch view if needed.
             if blog_index != -1 and blog_index != g_data.conf_index:
                 blog_config_switch(blog_index)
 
