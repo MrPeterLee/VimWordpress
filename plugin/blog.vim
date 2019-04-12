@@ -259,7 +259,7 @@ class DataObject(object):
     def config(self):
         if self.__config is None or len(self.__config) == 0:
 
-            confpsr = SafeConfigParser()
+            confpsr = ConfigParser()
             confile = os.path.expanduser("~/.vimpressrc")
             conf_options = ("blog_url", "username", "password")
 
