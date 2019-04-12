@@ -95,7 +95,7 @@ import os
 import mimetypes
 import webbrowser
 import tempfile
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 try:
     import markdown
