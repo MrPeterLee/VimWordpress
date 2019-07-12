@@ -415,7 +415,7 @@ class ContentStruct(object):
     @property
     def META_TEMPLATE(self):
         KEYS_BASIC = ("StrID", "Title", "Slug")
-        KEYS_EXT = ("Cats", "Tags")
+        KEYS_EXT = ("Cats", "Tags", "Description")
         KEYS_BLOG = ("EditType", "EditFormat", "BlogAddr")
 
         pt = ['"{k:<6}: {{{t}}}'.format(k=p, t=p.lower()) for p in KEYS_BASIC]
