@@ -95,7 +95,7 @@ import os
 import mimetypes
 import webbrowser
 import tempfile
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 try:
     import markdown
@@ -165,6 +165,7 @@ class DataObject(object):
     __xmlrpc = None
     __conf_index = 0
     __config = None
+    __env = None
 
     view = 'edit'
     vimpress_temp_dir = ''
@@ -256,10 +257,28 @@ class DataObject(object):
         return self.__xmlrpc
 
     @property
+    def env(self):
+        if self.__env is None or len(self.__env) == 0:
+
+            confpsr = ConfigParser()
+            confile = os.path.expanduser("~/.vimpressenv")
+            conf_section = ["extensions"]
+
+            if os.path.exists(confile):
+                confpsr.read(confile)
+                self.__env = {}
+                for sec in confpsr.sections():
+                    if sec in conf_section:
+                        if confpsr.get(sec, "params"):
+                            self.__env[sec] = confpsr.get(sec, "params").split(',')
+
+        return self.__env
+
+    @property
     def config(self):
         if self.__config is None or len(self.__config) == 0:
 
-            confpsr = SafeConfigParser()
+            confpsr = ConfigParser()
             confile = os.path.expanduser("~/.vimpressrc")
             conf_options = ("blog_url", "username", "password")
 
@@ -509,7 +528,11 @@ class ContentStruct(object):
                 field = dict(key=G.CUSTOM_FIELD_KEY, value=rawtext)
                 struct["custom_fields"].append(field)
 
-            struct["description"] = self.html_text = markdown.markdown(rawtext)
+            extentions=[]
+            if "extensions" in g_data.env:
+                extensions = g_data.env["extensions"]
+            md = markdown.Markdown(extensions=extensions)
+            struct["description"] = self.html_text = md.convert(rawtext)
         else:
             struct["description"] = self.html_text = rawtext
 
