@@ -8,10 +8,14 @@ VimWordpress is a Python 3 plugin for Vim to manage Wordpress (incl. wordpress.c
 
 ## Requirements
 
-- Vim 7.3+ with Python 3 support (Python 2 support is dropped) 
+- Vim 8+ with Python 3.3+ support (Python 2 support is dropped) 
 - Python 3 Environment matched wtih Vim's support ("has(python3)" return 1 in vim)
 - python-markdown/python-markdown2 installed (execute "pip install markdown2" in shell)
 - Wordpress 3.0.0 +
+
+## Updates
+
+- 2020-01-30: Replaced SafeConfigParser with ConfigParser per deprecation requirement for Python 3.2+
 
 ## Installation
 
@@ -77,3 +81,4 @@ Wordpress defines three types of posting: "draft", "private", "public", and VimW
 ### Credits
 
 All credit to Pentie for creating VimRepress, which this is based on.
+
