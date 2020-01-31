@@ -37,7 +37,7 @@
 "    - Write with Markdown, control posts format precisely.
 "    - Stores Markdown rawtext in wordpress custom fields.
 "
-" Version:	 4.0 beta
+" Version:	 4.0
 "
 " Config: Create account configure as `~/.vimpressrc' in the following
 " format:
@@ -973,11 +973,12 @@ def blog_guess_open(what):
     """
     post_id = ''
     blog_index = -1
+
     if type(what) is str:
 
-        for i, p in enumerate(vim.eval("VIMPRESS")):
-            if what.startswith(p["blog_url"]):
-                blog_index = i
+        # for i, p in enumerate(vim.eval("VIMPRESS")):
+        #     if what.startswith(p["blog_url"]):
+        #         blog_index = i
 
         # User input a url contained in the profiles
         if blog_index != -1:
