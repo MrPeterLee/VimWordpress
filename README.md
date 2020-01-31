@@ -15,7 +15,9 @@ VimWordpress is a Python 3 plugin for Vim to manage Wordpress (incl. wordpress.c
 
 ## Updates
 
-- 2020-01-30: Replaced SafeConfigParser with ConfigParser per deprecation requirement for Python 3.2+
+- 2020-01-30
+    - Replaced SafeConfigParser with ConfigParser per deprecation requirement for Python 3.2+
+    - Fixed an issue in BlogOpen
 
 ## Installation
 
