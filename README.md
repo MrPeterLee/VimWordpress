@@ -43,7 +43,7 @@ Some commands list above contain special usage, example below may clearify them 
     :BlogNew post         -  Write an new post. 
     :BlogNew page         -  Write an new page. 
 
-    :BlogSave             -  Save (defautely published.) 
+    :BlogSave             -  Save (default to published).
     :BlogSave draft       -  Save as draft. 
 
     :BlogPreview local    -  Preview page/post locally in your browser. 
